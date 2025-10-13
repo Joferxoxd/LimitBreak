@@ -13,8 +13,27 @@ public class MainMenu extends JFrame {
 
         // Acción del botón Jugar: cierra el menú y abre el juego
         playBtn.addActionListener((ActionEvent e) -> {
-            dispose();
-            SwingUtilities.invokeLater(Game::new);
+            // Pedir la clave antes de abrir el juego
+            String clave = JOptionPane.showInputDialog(
+                    this,
+                    "Ingresa la seccion de la clase:",
+                    "Acceso",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if ("9951".equals(clave)) {
+                // Correcto → cerrar menú y abrir el juego
+                dispose();
+                SwingUtilities.invokeLater(Game::new);
+            } else if (clave != null) {
+                // Solo muestra el mensaje si no canceló
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Clave incorrecta",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
 
         // Acción del botón Salir
@@ -32,6 +51,7 @@ public class MainMenu extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
+        setResizable(false);                    // para que el mouse no alarge la ventana
         // ==== TÍTULO ARRIBA ====
         JLabel title = new JLabel("LimitBreak", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 32));

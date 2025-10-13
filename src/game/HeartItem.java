@@ -1,0 +1,39 @@
+package game;
+
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+public class HeartItem extends Item {
+
+    public HeartItem() {
+        super(
+                "Fragmento de Corazón",
+                "Consumible",
+                "Restaura parte de la salud perdida.",
+                cargarIcono(), // ✅ método estático que devuelve el ícono
+                Rareza.LEGENDARIO
+        );
+    }
+
+    private static Image cargarIcono() {
+        try {
+            return ImageIO.read(new File("resources/items/heart.png"));
+        } catch (IOException e) {
+            System.err.println("Error al cargar el ícono: " + e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public void usar(Player player) {
+        if (!fueConsumido()) {
+            System.out.println("Usaste un Fragmento de Corazón. Tu salud aumenta.");
+            // player.curar(20); // si tienes lógica de curación
+            marcarConsumido(); // ✅ se marca como usado
+        } else {
+            System.out.println("Este ítem ya fue consumido.");
+        }
+    }
+}

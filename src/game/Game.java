@@ -27,9 +27,13 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     private int regenCounter = 0;
     private final int regenDelay = 300; // 300 ticks ≈ 5 s si el timer es de 16 ms
 
-
     //ENEMY
     private EnemyMelee enemy;
+
+    private List<Item> items = new ArrayList<>();
+
+    private final Inventory inventory;
+    private final InventoryMenu inventoryMenu; // ← nuevo menú visual
 
 
     public Game() {
@@ -40,10 +44,34 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         frame.setLocationRelativeTo(null);
         frame.add(this);
         frame.addKeyListener(this);
+        frame.setResizable(false);
         frame.setVisible(true);
 
         // Crear jugador
         player = new Player(380, 280, 40, 40, 8);
+
+        // Inventario y menú
+        inventory = new Inventory();
+
+        // Crear lista de pasivos
+        List<Passive> passives = new ArrayList<>();
+        passives.add(new Passive("Vivir en bucles", "Alma", "“Tu alma recuerda lo que tu mente \nolvidó.\nEstás atrapado en un ciclo que no \npuedes romper.”", "Activo", "+1 regen/s"));
+        //tipo:"Pasiva Encadenada"
+
+        // ✅ Prueba: Ver cuántas pasivas se cargaron
+        System.out.println("Pasivas cargadas: " + passives.size());
+        for (Passive p : passives) {
+            System.out.println("- " + p.getNombre());
+        }
+
+        // Crear el menú de inventario con los pasivos
+        //inventoryMenu = new InventoryMenu(inventory);
+        inventoryMenu = new InventoryMenu(inventory, passives);
+
+
+        // Añadir ítems al inventario (sin usarlos todavía)
+        inventory.addItem(new HeartItem());
+        inventory.addItem(new HeartItem());
 
         // ======== plataformas =========
         platforms = new ArrayList<>();
@@ -73,6 +101,12 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        // Si el inventario está visible, bloqueatodo y muestra el menú
+        if (inventoryMenu.isVisible()) {
+            inventoryMenu.draw(g);
+            return; // ← no dibujar nada más
+        }
+
         // Dibujar plataformas con offset de cámara
         g.setColor(Color.DARK_GRAY);
         for (Rectangle p : platforms) {
@@ -91,9 +125,15 @@ public class Game extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Si el inventario está abierto, pausa la lógica del juego
+        if (inventoryMenu.isVisible()) {
+            repaint();
+            return;
+        }
+
         // Mover horizontalmente mientras se mantiene la tecla
-        if (leftPressed)  player.moveLeft();
-        if (rightPressed) player.moveRight();
+        //if (leftPressed)  player.moveLeft();
+        //if (rightPressed) player.moveRight();
 
         // Actualizar gravedad y colisiones
         player.update(platforms, getHeight());
@@ -104,6 +144,7 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         if (cameraX > worldWidth - getWidth()) {
             cameraX = worldWidth - getWidth();
         }
+        enemy.update(player);
         // === Actualizar enemigo ===
         enemy.update(player);
         // chequeo de ataque del jugador
@@ -114,7 +155,7 @@ public class Game extends JPanel implements ActionListener, KeyListener {
                     enemy.getWidth(), enemy.getHeight()
             );
             if (atk.intersects(enemyBox)) {
-                enemy.takeDamage(1);                 // le baja 1 punto de vida
+                enemy.takeDamage(1);                 // le baje 1 punto de vida
             }
         }
         // === Regenerar vida lentamente ===
@@ -131,31 +172,39 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     // Controles
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT: leftPressed  = true; break;
-            case KeyEvent.VK_RIGHT: rightPressed = true; break;
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_SPACE: player.jump(); break;
-            case KeyEvent.VK_A:                 // ← NUEVO: tecla de ataque
+        int key = e.getKeyCode();
+
+        // Si el inventario está abierto, las teclas van al menú
+        if (inventoryMenu.isVisible()) {
+            inventoryMenu.handleInput(key, player);
+            return;
+        }
+
+        switch (key) {
+            case KeyEvent.VK_LEFT -> player.pressLeft(true);
+            case KeyEvent.VK_RIGHT -> player.pressRight(true);
+            case KeyEvent.VK_SPACE -> player.pressJump();
+            case KeyEvent.VK_A -> {
                 attacking = true;
-                player.startAttack();            // (si tienes un método así)
-                break;
+                player.startAttack();
+            }
+            case KeyEvent.VK_I -> inventoryMenu.toggle(); // abrir/cerrar menú
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                leftPressed = false;
-                break;
-            case KeyEvent.VK_RIGHT:
-                rightPressed = false;
-                break;
-            case KeyEvent.VK_A:                 // ← NUEVO
+        int key = e.getKeyCode();
+
+        if (inventoryMenu.isVisible()) return; // no hacer nada si el inventario está abierto
+
+        switch (key) {
+            case KeyEvent.VK_LEFT -> player.pressLeft(false);
+            case KeyEvent.VK_RIGHT -> player.pressRight(false);
+            case KeyEvent.VK_A -> {
                 attacking = false;
-                player.stopAttack();             // (si lo necesitas)
-                break;
+                player.stopAttack();
+            }
         }
     }
 
