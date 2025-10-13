@@ -29,7 +29,7 @@ public class HeartItem extends Item {
     @Override
     public void usar(Player player) {
         if (!fueConsumido()) {
-            System.out.println("Usaste un Fragmento de Corazón. Tu salud aumenta.");
+            System.out.println("Usaste un Fragmento de Corazon. Tu salud aumenta.");
             // player.curar(20); // si tienes lógica de curación
             marcarConsumido(); // ✅ se marca como usado
         } else {
