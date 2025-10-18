@@ -19,12 +19,13 @@ public class HeartItem extends Item {
 
     private static Image cargarIcono() {
         try {
-            return ImageIO.read(new File("resources/items/heart.png"));
-        } catch (IOException e) {
-            System.err.println("Error al cargar el ícono: " + e.getMessage());
+            return ImageIO.read(HeartItem.class.getResourceAsStream("/items/heart.png"));
+        } catch (IOException | IllegalArgumentException e) {
+            System.err.println("❌ No se pudo cargar el ícono del corazón: " + e.getMessage());
             return null;
         }
     }
+
 
     @Override
     public void usar(Player player) {

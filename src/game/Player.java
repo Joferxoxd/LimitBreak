@@ -36,7 +36,7 @@ public class Player {
     private boolean doubleJumpUsed = false;
 
     // Vida
-    private int health = 5;
+    private int health = 3;
     private int maxHealth = 5;
     //public int getMaxHealth() { return maxHealth; }
     //public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }

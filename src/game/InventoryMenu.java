@@ -34,6 +34,9 @@ public class InventoryMenu {
             currentTab = 0;         // vuelve a pestaña Inventario
             selectedIndex = 0;      // cursor en primer ítem
             scrollOffset = 0;       // vista desde arriba
+            passiveMenu.hide(); // ✅ oculta pasivas al abrir
+        } else {
+            passiveMenu.hide(); // ✅ oculta pasivas al cerrar
         }
     }
     public void hide() {
@@ -80,6 +83,10 @@ public class InventoryMenu {
         g2d.setColor(Color.GRAY);
         g2d.setFont(new Font("Consolas", Font.PLAIN, 14));
         g2d.drawString("← → Mover / Cambiar pestaña | ↑↓ Navegar | J Usar | K / I Cerrar", 120, 550);
+
+        if (currentTab == 2 && !passiveMenu.isVisible()) {
+            passiveMenu.toggle(); // asegura que pasivas estén visibles al dibujar pestaña 2
+        }
 
         switch (currentTab) {
             case 0 -> {
@@ -203,13 +210,28 @@ public class InventoryMenu {
 
         if (onTabs) {
             switch (keyCode) {
-                case KeyEvent.VK_LEFT -> currentTab = (currentTab - 1 + 3) % 3;
-                case KeyEvent.VK_RIGHT -> currentTab = (currentTab + 1) % 3;
-                case KeyEvent.VK_DOWN -> onTabs = false;
-                case KeyEvent.VK_K, KeyEvent.VK_I -> hide();
+                case KeyEvent.VK_LEFT -> {
+                    currentTab = (currentTab - 1 + 3) % 3;
+                    passiveMenu.hide(); // ✅ oculta pasivas si sales de pestaña 2
+                }
+                case KeyEvent.VK_RIGHT -> {
+                    currentTab = (currentTab + 1) % 3;
+                    passiveMenu.hide(); // ✅ oculta pasivas si sales de pestaña 2
+                }
+                case KeyEvent.VK_DOWN -> {
+                    onTabs = false;
+                    if (currentTab == 2 && !passiveMenu.isVisible()) {
+                        passiveMenu.toggle(); // ✅ muestra pasivas al entrar a pestaña 2
+                    }
+                }
+                case KeyEvent.VK_K, KeyEvent.VK_I -> {
+                    passiveMenu.hide(); // ✅ oculta pasivas si cierras desde pestañas
+                    hide();             // ✅ cierra inventario
+                }
             }
-            return;
+            return; // ✅ este return va FUERA del switch
         }
+
 
         if (currentTab == 0) {
             int maxIndex = totalSlots - 1;
@@ -244,10 +266,19 @@ public class InventoryMenu {
             }
         } else if (currentTab == 2) {
             passiveMenu.handleInput(keyCode);
+
             if (keyCode == KeyEvent.VK_UP) onTabs = true;
-        } else if (currentTab == 1 && keyCode == KeyEvent.VK_UP) {
-            onTabs = true;
+
+            if (keyCode == KeyEvent.VK_I || keyCode == KeyEvent.VK_K) {
+                passiveMenu.hide(); // ✅ oculta pasivas
+                hide();             // ✅ oculta inventario
+            }
         }
+        if (currentTab == 2) {
+            passiveMenu.toggle(); // ✅ muestra pasivas si la pestaña activa es 2
+        }
+
+
     }
     private void drawMultilineText(Graphics g, String text, int x, int y, int width, int lineHeight) {
         FontMetrics fm = g.getFontMetrics();

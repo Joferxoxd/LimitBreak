@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.Rectangle;
 import game.EnemyMelee;
-
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class Game extends JPanel implements ActionListener, KeyListener {
 
@@ -26,6 +27,8 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     // --- regeneración de vida ---
     private int regenCounter = 0;
     private final int regenDelay = 300; // 300 ticks ≈ 5 s si el timer es de 16 ms
+    private Image heartImage;
+
 
     //ENEMY
     private EnemyMelee enemy;
@@ -36,16 +39,36 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     private final InventoryMenu inventoryMenu; // ← nuevo menú visual
 
 
-    public Game() {
+
+
+    public Game(Dimension resolution, boolean fullscreen) {
         // Ventana
         JFrame frame = new JFrame("LimitBreak Prototype");
+
+        if (fullscreen) {
+            frame.setUndecorated(true);
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            gd.setFullScreenWindow(frame);
+        } else {
+            frame.setSize(resolution);
+            frame.setLocationRelativeTo(null);
+            frame.setResizable(false);
+        }
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(null);
         frame.add(this);
         frame.addKeyListener(this);
-        frame.setResizable(false);
         frame.setVisible(true);
+
+        try {
+            Image raw = ImageIO.read(getClass().getResourceAsStream("/items/heart.png"));
+            heartImage = raw.getScaledInstance(128, 128, Image.SCALE_SMOOTH);
+        } catch (IOException | IllegalArgumentException e) {
+            System.err.println("❌ No se pudo cargar /items/heart.png: " + e.getMessage());
+            heartImage = null;
+        }
+
+
 
         // Crear jugador
         player = new Player(380, 280, 40, 40, 8);
@@ -116,10 +139,22 @@ public class Game extends JPanel implements ActionListener, KeyListener {
         enemy.draw(g, cameraX);
         player.draw(g, cameraX);
 
-        // --- HUD de Vida ---
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Vida: " + player.getHealth(), 20, 30);
+        // --- HUD de Vida con corazones ---
+        int maxHearts = player.getMaxHealth();
+        int currentHearts = player.getHealth();
+
+        for (int i = 0; i < maxHearts; i++) {
+            int x = 20 + i * 40;
+            int y = 20;
+
+            if (heartImage != null && i < currentHearts) {
+                g.drawImage(heartImage, x, y, 32, 32, null);
+            } else {
+                g.setColor(new Color(60, 60, 60));
+                g.fillRect(x, y, 32, 32); // corazón vacío
+            }
+        }
+
 
     }
 
@@ -211,6 +246,7 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     @Override public void keyTyped(KeyEvent e) {}
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Game::new);
+        SwingUtilities.invokeLater(() -> new Game(new Dimension(1280, 720), false));
     }
+
 }
