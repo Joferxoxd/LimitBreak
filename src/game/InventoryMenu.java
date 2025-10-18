@@ -13,7 +13,6 @@ public class InventoryMenu {
     private boolean onTabs = false;
     private long blinkTimer = 0;
     private boolean blinkState = true;
-
     // Scroll y cuadrícula
     private final int cols = 4;
     private final int rows = 6;
@@ -25,28 +24,22 @@ public class InventoryMenu {
         this.inventory = inventory;
         this.passiveMenu = new PassiveMenu(passives);
     }
-
     public boolean isVisible() {
         return visible;
     }
-
     public void toggle() {
         visible = !visible;
         onTabs = false;
-
         if (visible) {
             currentTab = 0;         // vuelve a pestaña Inventario
             selectedIndex = 0;      // cursor en primer ítem
             scrollOffset = 0;       // vista desde arriba
         }
     }
-
-
     public void hide() {
         visible = false;
         onTabs = false;
     }
-
     public void draw(Graphics g) {
         if (!visible) return;
 
@@ -83,7 +76,6 @@ public class InventoryMenu {
                 g2d.drawString(name, x, tabY);
             }
         }
-
         // Controles
         g2d.setColor(Color.GRAY);
         g2d.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -107,9 +99,7 @@ public class InventoryMenu {
             case 1 -> drawAbilitiesPlaceholder(g2d);
             case 2 -> passiveMenu.draw(g2d);
         }
-
     }
-
     private void drawInventory(Graphics g, int frameX, int frameY, int frameWidth, int frameHeight) {
         Graphics2D g2d = (Graphics2D) g;
         List<Item> items = inventory.getItems();
@@ -124,7 +114,6 @@ public class InventoryMenu {
             blinkTimer = System.currentTimeMillis();
             blinkState = !blinkState;
         }
-
         // Recorte visual limitar dibujo al área del marco
         Shape originalClip = g2d.getClip();
         g2d.setClip(new Rectangle(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10));
@@ -172,7 +161,6 @@ public class InventoryMenu {
             //    g2d.drawString("[ Vacío ]", x + 8, y + 80);
             //}
         }
-
         // Restaurar el area de dibujo original
         g2d.setClip(originalClip);
 
@@ -204,14 +192,11 @@ public class InventoryMenu {
             drawMultilineText(g2d, selected.getDescripcion(), infoX, infoY + 50, 250, 18);
         }
     }
-
-
     private void drawAbilitiesPlaceholder(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
         g.drawString("[ En desarrollo ]", 330, 300);
     }
-
     public void handleInput(int keyCode, Player player) {
         if (!visible) return;
 
@@ -263,7 +248,6 @@ public class InventoryMenu {
             onTabs = true;
         }
     }
-
     private void drawMultilineText(Graphics g, String text, int x, int y, int width, int lineHeight) {
         FontMetrics fm = g.getFontMetrics();
         String[] words = text.split(" ");
