@@ -10,8 +10,8 @@ public abstract class Item {
     protected String tipo;
     protected String descripcion;
     protected Image icon;
-    protected Rareza rareza; // ✅ ahora está dentro de la clase
-    private boolean consumido = false; // ✅ nuevo campo para controlar uso
+    protected Rareza rareza; // ahora está dentro de la clase
+    private boolean consumido = false; //  nuevo campo para controlar uso
 
     // === Constructor ===
     public Item(String nombre, String tipo, String descripcion, Image icon, Rareza rareza) {

@@ -64,7 +64,7 @@ public class Game extends JPanel implements ActionListener, KeyListener {
             Image raw = ImageIO.read(getClass().getResourceAsStream("/items/heart.png"));
             heartImage = raw.getScaledInstance(128, 128, Image.SCALE_SMOOTH);
         } catch (IOException | IllegalArgumentException e) {
-            System.err.println("❌ No se pudo cargar /items/heart.png: " + e.getMessage());
+            System.err.println("No se pudo cargar /items/heart.png: " + e.getMessage());
             heartImage = null;
         }
 

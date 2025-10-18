@@ -14,7 +14,7 @@ public class Main {
             frame.setLocationRelativeTo(null); // Centrar en pantalla
             frame.setResizable(false); // Bloquear redimensionamiento
             frame.setLayout(new BorderLayout()); // Permite que el panel se estire
-            frame.add(menu, BorderLayout.CENTER); // Panel ocupa todo el espacio
+            frame.add(menu, BorderLayout.CENTER); // Panel ocupatodo el espacio
             frame.setVisible(true);
 
             menu.requestFocusInWindow(); // Asegura que reciba las teclas

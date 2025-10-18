@@ -12,7 +12,7 @@ public class HeartItem extends Item {
                 "Fragmento de Corazón",
                 "Consumible",
                 "Restaura parte de la salud perdida.",
-                cargarIcono(), // ✅ método estático que devuelve el ícono
+                cargarIcono(), //  metodo estático que devuelve el ícono
                 Rareza.LEGENDARIO
         );
     }
@@ -21,7 +21,7 @@ public class HeartItem extends Item {
         try {
             return ImageIO.read(HeartItem.class.getResourceAsStream("/items/heart.png"));
         } catch (IOException | IllegalArgumentException e) {
-            System.err.println("❌ No se pudo cargar el ícono del corazón: " + e.getMessage());
+            System.err.println(" No se pudo cargar el icono del corazón: " + e.getMessage());
             return null;
         }
     }
@@ -32,7 +32,7 @@ public class HeartItem extends Item {
         if (!fueConsumido()) {
             System.out.println("Usaste un Fragmento de Corazon. Tu salud aumenta.");
             // player.curar(20); // si tienes lógica de curación
-            marcarConsumido(); // ✅ se marca como usado
+            marcarConsumido(); // se marca como usado
         } else {
             System.out.println("Este ítem ya fue consumido.");
         }
