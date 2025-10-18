@@ -197,6 +197,7 @@ public class InventoryMenu {
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
         g.drawString("[ En desarrollo ]", 330, 300);
     }
+
     public void handleInput(int keyCode, Player player) {
         if (!visible) return;
 
