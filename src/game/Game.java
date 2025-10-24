@@ -29,6 +29,8 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     private final int regenDelay = 300; // 300 ticks ≈ 5 s si el timer es de 16 ms
     private Image heartImage;
 
+    private final StartMenuLauncher launcher;
+
 
     //ENEMY
     private EnemyMelee enemy;
@@ -38,27 +40,18 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     private final Inventory inventory;
     private final InventoryMenu inventoryMenu; // ← nuevo menú visual
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        requestFocus(); // ← asegura el foco de teclado al mostrarse
+    }
 
-
-
-    public Game(Dimension resolution, boolean fullscreen) {
-        // Ventana
-        JFrame frame = new JFrame("LimitBreak Prototype");
-
-        if (fullscreen) {
-            frame.setUndecorated(true);
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            gd.setFullScreenWindow(frame);
-        } else {
-            frame.setSize(resolution);
-            frame.setLocationRelativeTo(null);
-            frame.setResizable(false);
-        }
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(this);
-        frame.addKeyListener(this);
-        frame.setVisible(true);
+    public Game(StartMenuLauncher launcher, Dimension resolution, boolean fullscreen) {
+        this.launcher = launcher;
+        setPreferredSize(resolution);
+        setFocusable(true);
+        setBackground(Color.BLACK);
+        addKeyListener(this);
 
         try {
             Image raw = ImageIO.read(getClass().getResourceAsStream("/items/heart.png"));
@@ -209,6 +202,10 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            launcher.showPause(this);
+        }
+
         // Si el inventario está abierto, las teclas van al menú
         if (inventoryMenu.isVisible()) {
             inventoryMenu.handleInput(key, player);
@@ -244,9 +241,5 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     }
 
     @Override public void keyTyped(KeyEvent e) {}
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Game(new Dimension(1280, 720), false));
-    }
 
 }

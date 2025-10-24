@@ -22,7 +22,16 @@ public class StartMenuPanel extends JPanel {
     private boolean blinkState = true;
     private Timer blinkTimer;
 
-    public StartMenuPanel() {
+    private StartMenuLauncher launcher;
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        requestFocus(); // ← asegura el foco de teclado al mostrarse
+    }
+
+
+    public StartMenuPanel(StartMenuLauncher launcher) {
+        this.launcher = launcher;
         setFocusable(true);
         requestFocusInWindow();
         setBackground(Color.BLACK);
@@ -36,7 +45,7 @@ public class StartMenuPanel extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                handleInput(e.getKeyCode(), (JFrame) SwingUtilities.getWindowAncestor(StartMenuPanel.this));
+                handleInput(e.getKeyCode());
             }
         });
     }
@@ -44,7 +53,6 @@ public class StartMenuPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -75,21 +83,13 @@ public class StartMenuPanel extends JPanel {
             String label = options[i];
             String text = selected ? "< " + label + " >" : "   " + label;
 
-            if (selected) {
-                g.setColor(blinkState ? Color.YELLOW : Color.WHITE);
-            } else {
-                g.setColor(Color.WHITE);
-            }
-
+            g.setColor(selected ? (blinkState ? Color.YELLOW : Color.WHITE) : Color.WHITE);
             g.drawString(text, getWidth() / 2 - 100, 200 + i * 50);
         }
 
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString(" ↑ ↓ para moverse | J para seleccionar", getWidth() / 2 - 150, 450);
-
-        g.setFont(new Font("Consolas", Font.ITALIC, 14));
-        //g.drawString("¿Estás listo para romperte otra vez?", getWidth() / 2 - 150, 450);
     }
 
     private void drawOptionsMenu(Graphics g) {
@@ -133,7 +133,7 @@ public class StartMenuPanel extends JPanel {
         g.drawString("[Volver]", 100, 350);
     }
 
-    public void handleInput(int keyCode, JFrame frame) {
+    public void handleInput(int keyCode) {
         if (!inOptions) {
             switch (keyCode) {
                 case KeyEvent.VK_UP -> selectedIndex = (selectedIndex - 1 + options.length) % options.length;
@@ -141,7 +141,6 @@ public class StartMenuPanel extends JPanel {
                 case KeyEvent.VK_ENTER, KeyEvent.VK_J -> {
                     switch (selectedIndex) {
                         case 0 -> {
-                            frame.dispose();
                             String res = resolutions[resolutionIndex];
                             Dimension size;
 
@@ -154,17 +153,15 @@ public class StartMenuPanel extends JPanel {
                                 size = new Dimension(w, h);
                             }
 
-                            Dimension finalSize = size;
                             boolean fullscreen = res.equals("Pantalla completa");
-                            SwingUtilities.invokeLater(() -> new Game(finalSize, fullscreen));
-
+                            launcher.startGame(size, fullscreen);
                         }
                         case 1 -> System.out.println("Continuar (aún no implementado)");
                         case 2 -> {
                             inOptions = true;
                             optionIndex = 0;
                         }
-                        case 3 -> System.exit(0);
+                        case 3 -> launcher.exitGame();
                     }
                 }
             }
@@ -193,45 +190,7 @@ public class StartMenuPanel extends JPanel {
                 }
                 case KeyEvent.VK_ESCAPE -> inOptions = false;
             }
-
-            if (optionIndex == 0 && (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT)) {
-                String res = resolutions[resolutionIndex];
-                GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
-                StartMenuPanel newPanel = new StartMenuPanel();
-                newPanel.inOptions = true;
-                newPanel.optionIndex = this.optionIndex;
-                newPanel.resolutionIndex = this.resolutionIndex;
-                newPanel.languageIndex = this.languageIndex;
-                newPanel.volume = this.volume;
-
-                if (res.equals("Pantalla completa")) {
-                    frame.dispose();
-                    frame = new JFrame("LimitBreak");
-                    frame.setUndecorated(true);
-                    frame.setLayout(new BorderLayout());
-                    frame.add(newPanel, BorderLayout.CENTER);
-                    gd.setFullScreenWindow(frame);
-                    frame.setVisible(true);
-                } else {
-                    String[] parts = res.split("x");
-                    int w = Integer.parseInt(parts[0]);
-                    int h = Integer.parseInt(parts[1]);
-                    gd.setFullScreenWindow(null);
-                    frame.dispose();
-                    frame = new JFrame("LimitBreak");
-                    frame.setUndecorated(false);
-                    frame.setSize(w, h);
-                    frame.setLocationRelativeTo(null);
-                    frame.setLayout(new BorderLayout());
-                    frame.add(newPanel, BorderLayout.CENTER);
-                    frame.setVisible(true);
-                }
-
-                newPanel.requestFocusInWindow();
-            }
         }
-
         repaint();
         requestFocusInWindow();
     }
