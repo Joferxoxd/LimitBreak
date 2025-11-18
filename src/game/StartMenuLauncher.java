@@ -27,12 +27,20 @@ public class StartMenuLauncher extends JFrame {
     }
 
     // Inicia el juego
-    public void startGame(Dimension size, boolean fullscreen) {
+    public void startGame(Dimension size, boolean fullscreen, int cameraOffsetX, int cameraOffsetY) {
         getContentPane().removeAll();
-        getContentPane().add(new Game(this, size, fullscreen));
+
+        Game gamePanel = new Game(this, size, fullscreen, cameraOffsetX, cameraOffsetY);
+        getContentPane().add(gamePanel);
+
         revalidate();
         repaint();
+
+        // <-- Esto asegura que el panel reciba las teclas
+        gamePanel.requestFocusInWindow();
     }
+
+
 
     public void resumeGame(Game previousGame) {
         getContentPane().removeAll();

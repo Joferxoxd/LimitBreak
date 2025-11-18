@@ -154,7 +154,8 @@ public class StartMenuPanel extends JPanel {
                             }
 
                             boolean fullscreen = res.equals("Pantalla completa");
-                            launcher.startGame(size, fullscreen);
+                            launcher.startGame(size, fullscreen, 1000, 1000); // offset deseado
+
                         }
                         case 1 -> System.out.println("Continuar (aún no implementado)");
                         case 2 -> {
