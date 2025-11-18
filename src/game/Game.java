@@ -21,7 +21,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
     // cámara mundo
     private int cameraX = 1000;
     private int cameraY = 1000;
-    private final float cameraLerp = 0.35f;
+    private final float cameraLerp = 0.18f;
     private boolean cameraInitialized = false;
 
     // launcher (pausa)
