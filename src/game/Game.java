@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-
 public class Game extends JPanel implements ActionListener, KeyListener, MouseWheelListener {
-
 
     // entradas
     private boolean leftPressed  = false;
@@ -19,22 +17,19 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
     private final Player player;
 
     // cámara mundo
-    private int cameraX = 1000;
-    private int cameraY = 1000;
+    private int cameraX = 0;
+    private int cameraY = 0;
     private final float cameraLerp = 0.18f;
     private boolean cameraInitialized = false;
 
     // launcher (pausa)
     private final StartMenuLauncher launcher;
-    private int zoom = 2;
     private double zoomFactor = 1.0;
-
-
 
     // enemigo de prueba
     private EnemyMelee enemy;
 
-    // inventario y menús (si ya los tienes)
+    // inventario y menús
     private final Inventory inventory;
     private final InventoryMenu inventoryMenu;
 
@@ -46,6 +41,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
     private int regenCounter = 0;
     private final int regenDelay = 300;
 
+    // ===== Constructor =====
     public Game(StartMenuLauncher launcher, Dimension resolution, boolean fullscreen, int cameraOffsetX, int cameraOffsetY) {
         this.launcher = launcher;
         setPreferredSize(resolution);
@@ -62,21 +58,17 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
         int startX = 1200; // valor razonable dentro de RoomMain
         int startY = 1800; // encima del piso de RoomMain
         player = new Player(startX, startY, 40, 40, 8);
-        // aplicar offset inicial a la cámara
-        cameraX = player.getX() - (getWidth() / 2) + player.getWidth() / 2 + cameraOffsetX;
-        cameraY = player.getY() - (getHeight() / 2) + player.getHeight() / 2 + cameraOffsetY;
 
-        cameraInitialized = true; // evitar que se vuelva a centrar automáticamente
+        // enemigo de prueba
+        enemy = new EnemyMelee(400, 820, 40, 40, 200, 500, 2);
 
-        // centrar cámara en el jugador al iniciar
-
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                requestFocusInWindow();
-            }
-        });
+        // inventario y menú
+        inventory = new Inventory();
+        List<Passive> passives = new ArrayList<>();
+        passives.add(new Passive("Vivir en bucles", "Alma",
+                "“Tu alma recuerda lo que tu mente \nolvidó.\nEstás atrapado en un ciclo que no \npuedes romper.”",
+                "Activo", "+1 regen/s"));
+        inventoryMenu = new InventoryMenu(inventory, passives);
 
         // load heart quietly
         try {
@@ -86,59 +78,74 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
             heartImage = null;
         }
 
-        // inventario y menu
-        inventory = new Inventory();
-        List<Passive> passives = new ArrayList<>();
-        passives.add(new Passive("Vivir en bucles", "Alma", "“Tu alma recuerda lo que tu mente \nolvidó.\nEstás atrapado en un ciclo que no \npuedes romper.”", "Activo", "+1 regen/s"));
-        inventoryMenu = new InventoryMenu(inventory, passives);
-
-        // enemigo de prueba
-        enemy = new EnemyMelee(400, 820, 40, 40, 200, 500, 2);
-
         // iniciar timer
         timer = new Timer(16, this);
         timer.start();
+
+        // listener para recuperar foco
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
     }
 
+    // ===== Método para centrar cámara en el jugador =====
+    private void centerCameraOnPlayer() {
+        int visibleWidth  = (int)(getWidth()  / zoomFactor);
+        int visibleHeight = (int)(getHeight() / zoomFactor);
 
+        cameraX = player.getX() + player.getWidth() / 2 - visibleWidth / 2;
+        cameraY = player.getY() + player.getHeight() / 2 - visibleHeight / 2;
+
+        if (currentRoom != null) {
+            cameraX = Math.max(0, Math.min(cameraX, currentRoom.getWidth()  - visibleWidth));
+            cameraY = Math.max(0, Math.min(cameraY, currentRoom.getHeight() - visibleHeight));
+        }
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        requestFocus();
+        centerCameraOnPlayer();   // inicializar cámara al inicio
+        cameraInitialized = true;
+    }
+
+    // ===== Render =====
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // inicializar cámara una sola vez, cuando el panel ya tiene tamaño real
         if (!cameraInitialized && player != null) {
-            cameraX = player.getX() - (getWidth() / 2) + player.getWidth() / 2;
-            cameraY = player.getY() - (getHeight() / 2) + player.getHeight() / 2;
+            centerCameraOnPlayer();
             cameraInitialized = true;
         }
 
         Graphics2D g2d = (Graphics2D) g.create();
-
-        // aplicar zoom real
         g2d.scale(zoomFactor, zoomFactor);
 
-        // fondo
-        // Fondo negro que cubre toda el área visible, incluso si el zoom revela zonas fuera de la sala
-        g.setColor(Color.BLACK);
-        g.fillRect(-cameraX, -cameraY, getWidth() * 2, getHeight() * 2); // multiplicado por 2 por seguridad
+        // fondo negro
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth() * 2, getHeight() * 2);
 
-
-        // si inventario visible
+        // inventario
         if (inventoryMenu.isVisible()) {
             inventoryMenu.draw(g2d);
             g2d.dispose();
             return;
         }
 
-        // dibujar sala
+        // sala
         if (currentRoom != null) currentRoom.draw(g2d, cameraX, cameraY);
 
         // enemigo / jugador
         if (enemy != null) enemy.draw(g2d, cameraX);
         player.draw(g2d, cameraX, cameraY);
 
-        // HUD corazones (sin zoom)
-        g2d.scale(1/zoomFactor, 1/zoomFactor); // HUD no debe escalarse
+        // HUD (sin zoom)
+        g2d.scale(1/zoomFactor, 1/zoomFactor);
         int maxHearts = player.getMaxHealth();
         int currentHearts = player.getHealth();
         for (int i = 0; i < maxHearts; i++) {
@@ -155,25 +162,18 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
         g2d.dispose();
     }
 
-
+    // ===== Game loop =====
     @Override
     public void actionPerformed(ActionEvent e) {
-        // pausa si menu abierto
         if (inventoryMenu.isVisible()) {
             repaint();
             return;
         }
 
-        // actualizar player con colisiones de la sala actual
         List<Rectangle> solids = currentRoom != null ? currentRoom.getPlatforms() : new ArrayList<>();
         player.update(solids);
 
-        // actualizar cámara (suave) para seguir player en X e Y
-        // --- Cámara suave tipo Hollow Knight / Terraria ---
-// === Actualizar cámara con suavizado y límites que respetan el zoom ===
-
-// === Actualizar cámara con suavizado y límites que respetan el zoom ===
-
+        // cámara suave
         int targetX = player.getX() - (int)((getWidth() / zoomFactor) / 2) + player.getWidth() / 2;
         int targetY = player.getY() - (int)((getHeight() / zoomFactor) / 2) + player.getHeight() / 2;
 
@@ -188,18 +188,14 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
             cameraY = Math.max(0, Math.min(cameraY, currentRoom.getHeight() - visibleHeight));
         }
 
-
-        // enemigo simple
         if (enemy != null) enemy.update(player);
 
-        // ataque vs enemigo
         Rectangle atk = player.getAttackBox();
         if (atk != null && enemy != null) {
             Rectangle enemyBox = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
             if (atk.intersects(enemyBox)) enemy.takeDamage(1);
         }
 
-        // regen vida lento
         if (player.getHealth() < player.getMaxHealth()) {
             regenCounter++;
             if (regenCounter >= regenDelay) {
@@ -208,20 +204,17 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
             }
         }
 
-        // detección puerta -> cambiar a dungeon (ejemplo)
+        // cambio de sala
         if (currentRoom.getExitDoor() != null && player.getBounds().intersects(currentRoom.getExitDoor())) {
-            // entrar a la mazmorra: crear sala dungeon y reubicar jugador dentro
             currentRoom = new RoomDungeon();
-            // pon al jugador en el centro de la primera habitación pequeña dentro de RoomDungeon (p. ej. 100,100)
             player.setPosition(100, 100);
-            // reset cámara para que empiece a seguir a la nueva posición
-            cameraX = 0; cameraY = 0;
+            centerCameraOnPlayer();   // reset cámara
         }
 
         repaint();
     }
 
-    // controles
+    // ===== Controles =====
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
@@ -247,10 +240,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
         if (key == KeyEvent.VK_MINUS) zoomFactor /= 1.1;
         zoomFactor = Math.max(0.25, Math.min(zoomFactor, 8.0));
         repaint();
-
     }
-
-
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
