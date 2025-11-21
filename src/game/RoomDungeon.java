@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * RoomDungeon: genera una grilla 3x3 de habitaciones tipo caja.
+ * Cada "room" es ROOM_WIDTH x ROOM_HEIGHT. Creamos paredes (rectángulos sólidos)
+ * que sirven para colisiones (left,right,top,bottom) y devolvemos esas plataformas.
+ */
 public class RoomDungeon extends Room {
 
     private static final int ROOM_WIDTH = 800;
@@ -19,6 +24,7 @@ public class RoomDungeon extends Room {
         walls = new ArrayList<>();
         generateDungeon();
     }
+
     private void generateDungeon() {
         // generar habitaciones en grilla 3x3
         for (int ry = 0; ry < GRID_SIZE; ry++) {
@@ -84,7 +90,6 @@ public class RoomDungeon extends Room {
         // devolvemos las paredes como plataformas sólidas para las colisiones
         return new ArrayList<>(platforms);
     }
-
     @Override
     public Rectangle getExitDoor() {
         return exitDoor;
