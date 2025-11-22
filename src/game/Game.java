@@ -267,6 +267,4 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
         zoomFactor = Math.max(0.25, Math.min(zoomFactor, 8.0));
         repaint();
     }
-
-
 }
