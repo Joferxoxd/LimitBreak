@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class RoomMain extends Room {
 
     // Offset (desplazamiento de la sala)
-    private final int offsetX = 1000;
-    private final int offsetY = 1000;
+    private final int offsetX = 0;
+    private final int offsetY = 0;
 
     public RoomMain() {
         width = 2000;

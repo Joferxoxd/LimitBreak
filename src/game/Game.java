@@ -55,8 +55,8 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseWh
         currentRoom = new RoomMain();
 
         // crear player: colocarlo sobre el piso de RoomMain (centro)
-        int startX = 1200; // valor razonable dentro de RoomMain
-        int startY = 1800; // encima del piso de RoomMain
+        int startX = 200; // valor razonable dentro de RoomMain
+        int startY = 800; // encima del piso de RoomMain
         player = new Player(startX, startY, 40, 40, 8);
 
         // enemigo de prueba
