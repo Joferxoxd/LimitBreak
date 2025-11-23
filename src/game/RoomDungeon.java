@@ -177,7 +177,6 @@ public class RoomDungeon extends Room {
     public List<Rectangle> getPlatforms() {
         return new ArrayList<>(platforms);
     }
-
     @Override
     public Rectangle getExitDoor() {
         return exitDoor;
