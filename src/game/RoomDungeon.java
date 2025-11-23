@@ -173,7 +173,6 @@ public class RoomDungeon extends Room {
             g.fillRect(exitDoor.x - cameraX, exitDoor.y - cameraY, exitDoor.width, exitDoor.height);
         }
     }
-
     @Override
     public List<Rectangle> getPlatforms() {
         return new ArrayList<>(platforms);
