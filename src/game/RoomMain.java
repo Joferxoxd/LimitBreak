@@ -40,6 +40,6 @@ public class RoomMain extends Room {
         g.fillRect(exitDoor.x - cameraX, exitDoor.y - cameraY, exitDoor.width, exitDoor.height);
 
         g.setColor(Color.WHITE);
-        g.drawString("ENTRAR A MAZMORRA", exitDoor.x - cameraX - 30, exitDoor.y - 10 - cameraY);
+        g.drawString("ENTRAR", exitDoor.x - cameraX - 30, exitDoor.y - 10 - cameraY);
     }
 }
