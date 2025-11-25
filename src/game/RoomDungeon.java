@@ -35,7 +35,6 @@ public class RoomDungeon extends Room {
     public RoomDungeon() {
         generate();
     }
-
     private void generate() {
         Random rng = new Random();
 
