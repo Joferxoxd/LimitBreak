@@ -37,7 +37,6 @@ public class RoomDungeon extends Room {
     }
     private void generate() {
         Random rng = new Random();
-
         // 1-2. Generar celdas con tamaño sesgado (más pequeñas que grandes)
         for (int i = 0; i < NUM_CELLS; i++) {
             int cx = MAP_WIDTH / 2 + (int)((rng.nextDouble() - 0.5) * 2 * MAX_RADIUS);
