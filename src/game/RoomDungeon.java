@@ -116,8 +116,6 @@ public class RoomDungeon extends Room {
                 walls.add(new Rectangle(corridor.x + corridor.width, corridor.y, WALL_THICKNESS, corridor.height)); // derecha
             }
         }
-
-
         // Construir paredes alrededor de cada habitación, segmentadas
         for (Rectangle r : roomFloors) {
             addRoomWallsSegmented(r, WALL_THICKNESS, SEGMENT);
