@@ -120,7 +120,6 @@ public class RoomDungeon extends Room {
         for (Rectangle r : roomFloors) {
             addRoomWallsSegmented(r, WALL_THICKNESS, SEGMENT);
         }
-
         // Carvar huecos de corredores en las paredes
         carveCorridorOpenings(corridors);
 
