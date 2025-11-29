@@ -126,7 +126,6 @@ public class RoomDungeon extends Room {
         // Dimensiones del mundo y salida
         width = MAP_WIDTH;
         height = MAP_HEIGHT;
-
         // Puerta de salida: al borde norte de una habitación grande
         Rectangle biggest = roomFloors.stream()
                 .max(Comparator.comparingInt(o -> o.width * o.height))
