@@ -122,7 +122,6 @@ public class RoomDungeon extends Room {
         }
         // Carvar huecos de corredores en las paredes
         carveCorridorOpenings(corridors);
-
         // Dimensiones del mundo y salida
         width = MAP_WIDTH;
         height = MAP_HEIGHT;
