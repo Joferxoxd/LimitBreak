@@ -135,7 +135,6 @@ public class RoomDungeon extends Room {
         // platforms = paredes sólidas para colisión
         platforms = new ArrayList<>(walls);
     }
-
     @Override
     public void draw(Graphics g, int cameraX, int cameraY) {
         // fondo
