@@ -173,9 +173,7 @@ public class RoomDungeon extends Room {
     public Rectangle getExitDoor() {
         return exitDoor;
     }
-
     // ---------- Helpers de generación ----------
-
     private int skewed(Random rng, int min, int max) {
         // sesgo hacia valores pequeños: promedio de varios randoms
         double t = (rng.nextDouble() + rng.nextDouble() + rng.nextDouble()) / 3.0;
