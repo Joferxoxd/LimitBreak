@@ -179,7 +179,6 @@ public class RoomDungeon extends Room {
         double t = (rng.nextDouble() + rng.nextDouble() + rng.nextDouble()) / 3.0;
         return min + (int)(t * (max - min));
     }
-
     private Point centerOf(Rectangle r) {
         return new Point(r.x + r.width / 2, r.y + r.height / 2);
     }
