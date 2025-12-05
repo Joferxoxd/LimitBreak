@@ -182,7 +182,6 @@ public class RoomDungeon extends Room {
     private Point centerOf(Rectangle r) {
         return new Point(r.x + r.width / 2, r.y + r.height / 2);
     }
-
     private Point resolveOverlap(Rectangle A, Rectangle B) {
         int ax = A.x + A.width / 2;
         int ay = A.y + A.height / 2;
