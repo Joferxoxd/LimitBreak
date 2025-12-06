@@ -206,7 +206,6 @@ public class RoomDungeon extends Room {
         }
         return new Point(0, 0);
     }
-
     private List<Edge> kNearestGraph(List<Point> pts, int k) {
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < pts.size(); i++) {
