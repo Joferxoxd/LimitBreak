@@ -222,7 +222,6 @@ public class RoomDungeon extends Room {
         }
         return edges;
     }
-
     private double dist(Point a, Point b) {
         int dx = a.x - b.x, dy = a.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);
