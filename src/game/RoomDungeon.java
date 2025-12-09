@@ -226,7 +226,6 @@ public class RoomDungeon extends Room {
         int dx = a.x - b.x, dy = a.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
-
     private List<Edge> minimumSpanningTree(List<Point> pts, List<Edge> edges) {
         List<Edge> mst = new ArrayList<>();
         Set<Integer> inTree = new HashSet<>();
