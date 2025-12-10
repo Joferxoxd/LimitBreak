@@ -105,7 +105,6 @@ public class StartMenuPanel extends JPanel {
             drawOptionsMenu(g);
         }
     }
-
     private void drawMainMenu(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Serif", Font.BOLD, 48));
