@@ -247,7 +247,6 @@ public class RoomDungeon extends Room {
         }
         return mst;
     }
-
     private List<Rectangle> lCorridorBetween(Rectangle A, Rectangle B, int thick) {
         List<Rectangle> out = new ArrayList<>();
         Point ca = centerOf(A);
