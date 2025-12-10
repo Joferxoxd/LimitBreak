@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class RoomDungeon extends Room {
+public class RoomDungeon extends game.Room {
 
     // Parámetros de generación
     private static final int NUM_CELLS = 30;              // menos celdas, más salas grandes

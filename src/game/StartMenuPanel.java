@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.util.Random;
 
 public class StartMenuPanel extends JPanel {
@@ -22,13 +23,18 @@ public class StartMenuPanel extends JPanel {
     private boolean blinkState = true;
     private Timer blinkTimer;
 
+    // Animación de fondos
+    private Image[] backgrounds;
+    private int currentBackgroundIndex = 0;
+    private Timer animationTimer;
+
     private StartMenuLauncher launcher;
+
     @Override
     public void addNotify() {
         super.addNotify();
-        requestFocus(); // ← asegura el foco de teclado al mostrarse
+        requestFocus(); // asegura el foco de teclado al mostrarse
     }
-
 
     public StartMenuPanel(StartMenuLauncher launcher) {
         this.launcher = launcher;
@@ -36,6 +42,27 @@ public class StartMenuPanel extends JPanel {
         requestFocusInWindow();
         setBackground(Color.BLACK);
 
+        // Cargar las 14 imágenes desde resources/images
+        backgrounds = new Image[14];
+        for (int i = 0; i < 14; i++) {
+            String path = "/images/titlebackgrundscopia" + (i + 2) + ".png";
+            URL url = getClass().getResource(path);
+            if (url == null) {
+                System.err.println("No se encontró la imagen: " + path);
+            } else {
+                backgrounds[i] = new ImageIcon(url).getImage();
+                System.out.println("Cargada: " + url);
+            }
+        }
+
+        // Timer para animación en bucle (cambia cada 100 ms)
+        animationTimer = new Timer(100, e -> {
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+            repaint();
+        });
+        animationTimer.start();
+
+        // Timer para parpadeo del texto
         blinkTimer = new Timer(500, e -> {
             blinkState = !blinkState;
             repaint();
@@ -53,9 +80,16 @@ public class StartMenuPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, getWidth(), getHeight());
 
+        // Fondo animado
+        if (backgrounds[currentBackgroundIndex] != null) {
+            g.drawImage(backgrounds[currentBackgroundIndex], 0, 0, getWidth(), getHeight(), this);
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
+
+        // Efecto visual extra (líneas azules)
         g.setColor(new Color(100, 100, 255, 80));
         for (int i = 0; i < 60; i++) {
             int x1 = rand.nextInt(getWidth());
@@ -75,7 +109,7 @@ public class StartMenuPanel extends JPanel {
     private void drawMainMenu(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Serif", Font.BOLD, 48));
-        g.drawString("LimitBreak", getWidth() / 2 - 140, 100);
+        //g.drawString("LimitBreak", getWidth() / 2 - 140, 100);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 24));
         for (int i = 0; i < options.length; i++) {
@@ -155,7 +189,6 @@ public class StartMenuPanel extends JPanel {
 
                             boolean fullscreen = res.equals("Pantalla completa");
                             launcher.startGame(size, fullscreen, 1000, 1000); // offset deseado
-
                         }
                         case 1 -> System.out.println("Continuar (aún no implementado)");
                         case 2 -> {
