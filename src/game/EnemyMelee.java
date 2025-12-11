@@ -52,7 +52,6 @@ public class EnemyMelee {
             if (x <= patrolLeft) dir = 1;
             if (x + width >= patrolRight) dir = -1;
         }
-
         // Revisar choque con jugador
         Rectangle rEnemy = new Rectangle(x, y, width, height);
         Rectangle rPlayer = new Rectangle(player.getX(), player.getY(),
