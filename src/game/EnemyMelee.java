@@ -34,7 +34,6 @@ public class EnemyMelee {
         this.patrolRight = patrolRight;
         this.speed = speed;
     }
-
     /** Actualiza movimiento y colisión */
     public void update(Player player) {
         if (!alive) return;
