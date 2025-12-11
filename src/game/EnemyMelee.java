@@ -24,7 +24,6 @@ public class EnemyMelee {
     private int health = 3;    // nueva vida del enemigo
     private boolean alive = true; // ya está, lo mantenemos
 
-
     public EnemyMelee(int x, int y, int width, int height,
                       int patrolLeft, int patrolRight, int speed) {
         this.x = x;
